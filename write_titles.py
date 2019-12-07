@@ -12,16 +12,16 @@ if __name__ == '__main__':
     tables = soup.findAll("table")
     use_tables = []
 
-    for i in range(len(tables)):
-        rows = tables[i].findAll("tr")
+    for table in tables:
+        rows = table.findAll("tr")
         if re.search("(Famison|SideM|iDOLM@STER\.KR|Xenoglossia|Radio|Cover)", str(rows[0])) is None:
-            use_tables.append(tables[i])
+            use_tables.append(table)
 
     titles = []
-    for index in range(len(use_tables)):
-        rows = use_tables[index].findAll("tr")
-        for i in range(len(rows)):
-            temp = rows[i].find(['td', 'th']).text
+    for use_table in use_tables:
+        rows = use_table.findAll("tr")
+        for row in rows:
+            temp = row.find(['td', 'th']).text
             if re.search("(Title \(English\)|List of)", str(temp)) is not None or str(temp) == '':
                 continue
             print(temp)
