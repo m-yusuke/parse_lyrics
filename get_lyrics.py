@@ -36,17 +36,32 @@ def get_lyrics(song_url):
 
 if __name__ == '__main__':
     route_url = "https://www.project-imas.com"
-    req_title = requests.get(route_url + "/wiki/Category:Songs")
+    titles_url = route_url + "/wiki/Category:Songs"
+    req_title = requests.get(titles_url)
     with open("titles.txt", 'r') as f:
         req_titles = f.readlines()
 
-    title_html = req_title.content
-    title_soup = BeautifulSoup(title_html, "html5lib")
-    groups = title_soup.find_all(class_="mw-category-group")
+    titleinfos = []
+    while True:
+        print(titles_url)
+        title_html = req_title.content
+        title_soup = BeautifulSoup(title_html, "html5lib")
+        groups = title_soup.find_all(class_="mw-category-group")
+
+        titleinfos += get_titleinfos(groups)
+
+        content = title_soup.find(id="mw-pages")
+        seeks = content.find_all("a", recursive=False)
+        if seeks[-1].text == "next page":
+            titles_url = route_url + seeks[-1].attrs['href']
+            req_title = requests.get(titles_url)
+        else:
+            break
     
-    titleinfos = get_titleinfos(groups)
+    for i in titleinfos:
+        print(f"title = {i['title']}, url = {i['url']}")
     song_url = route_url + titleinfos[0]["url"]
-    print(song_url)
+    #print(song_url)
     
-    lyrics = get_lyrics(song_url)
-    print(lyrics)
+    #lyrics = get_lyrics(song_url)
+    #print(lyrics)
