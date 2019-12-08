@@ -94,12 +94,12 @@ if __name__ == '__main__':
                 "lyrics": ""
                 }
             }
-    num_of_song = len(songinfo)
-    print(f"number of song is {len(songinfos)}.")
+    num_of_song = len(songinfos)
+    print(f"number of song is {num_of_song}.")
     for key, songinfo in songinfo.items():
         print(f"processing {songinfo['song_title']}")
         testinfo[key] = get_lyrics(songinfo)
-        print(f"done {key}/{num_of_song}.")
+        print(f"done {key + 1}/{num_of_song}.")
         randsleep = random.random() * 10
         print(f"sleeping {randsleep} seconds....")
         time.sleep(randsleep)
