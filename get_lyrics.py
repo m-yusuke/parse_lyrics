@@ -4,18 +4,18 @@ from bs4 import BeautifulSoup
 import requests
 import re
 import pprint
+import time
+import json
+import random
 
 
 def get_lyrics(songinfo):
-    songattr = {
-            "title": "",
-            "song_title": "",
-            "lyrics": ""
-            }
-    req_song = requests.get(song_url)
-    song_html = req_song.content
-    song_soup = BeautifulSoup(song_html, "html5lib")
-    lyrics_sec = song_soup.find(class_="wikitable")
+    req_song = requests.get(songinfo["url"])
+    html = req_song.content
+    soup = BeautifulSoup(html, "html5lib")
+    if re.search("iM@S Cover Data", str(soup)):
+        return None
+    lyrics_sec = soup.find(class_="wikitable")
     rows = lyrics_sec.find_all("tr")
     lyrics = ""
     for row in rows:
@@ -23,9 +23,9 @@ def get_lyrics(songinfo):
         if cell is not None:
             lyrics += cell.text
 
-    songattr["lyrics"] = lyrics
-
-    return songattr
+    songinfo["lyrics"] = lyrics
+    songinfo.pop("url")
+    return songinfo
 
 
 def get_songinfos(url):
@@ -61,7 +61,8 @@ def get_songinfos(url):
             songinfo = {
                     "song_title": "",
                     "title": title,
-                    "url": ""
+                    "url": "",
+                    "lyrics": ""
                     }
             cells = row.find_all('td')
             if len(cells) > 0 and re.search("page does not exist", str(cells)) is None:
@@ -79,8 +80,29 @@ if __name__ == '__main__':
     songlist_url = route_url + "/wiki/Official_Song_Listing"
 
     songinfos = get_songinfos(songlist_url)
+    testinfo = {
+            0: {
+                "song_title": "2nd SIDE",
+                "title": "THE IDOLM@STER CINDERELLA GIRLS",
+                "url": "https://www.project-imas.com/wiki/2nd_SIDE",
+                "lyrics": ""
+                },
+            1: {
+                "song_title": "亜麻色の髪の乙女",
+                "title": "THE IDOLM@STER CINDERELLA GIRLS",
+                "url": "https://www.project-imas.com/wiki/Amairo_no_Kami_no_Otome",
+                "lyrics": ""
+                }
+            }
+    num_of_song = len(songinfo)
+    print(f"number of song is {len(songinfos)}.")
+    for key, songinfo in songinfo.items():
+        print(f"processing {songinfo['song_title']}")
+        testinfo[key] = get_lyrics(songinfo)
+        print(f"done {key}/{num_of_song}.")
+        randsleep = random.random() * 10
+        print(f"sleeping {randsleep} seconds....")
+        time.sleep(randsleep)
 
-    pprint.pprint(songinfos)
-    
-    #lyrics = get_songinfo(song_url)
-    #print(lyrics)
+    with open('./lyrics/imas.json', 'w') as f:
+        result = json.dump(testinfo, f, ensure_ascii=False, indent=4)
