@@ -28,7 +28,7 @@ def get_lyrics(songinfo):
     return songinfo
 
 
-def get_songinfos(url):
+def get_songinfos(url, route_url):
     req_url = requests.get(url)
     html = req_url.content
     songinfos = {}
@@ -67,7 +67,7 @@ def get_songinfos(url):
             cells = row.find_all('td')
             if len(cells) > 0 and re.search("page does not exist", str(cells)) is None:
                 songinfo["song_title"] = cells[1].text
-                songinfo["url"] = cells[1].find("a").attrs['href']
+                songinfo["url"] = route_url + cells[1].find("a").attrs['href']
                 songinfos[song_index] = songinfo
                 song_index += 1
 
@@ -79,7 +79,7 @@ if __name__ == '__main__':
     route_url = "https://www.project-imas.com"
     songlist_url = route_url + "/wiki/Official_Song_Listing"
 
-    songinfos = get_songinfos(songlist_url)
+    songinfos = get_songinfos(songlist_url, route_url)
     testinfo = {
             0: {
                 "song_title": "2nd SIDE",
