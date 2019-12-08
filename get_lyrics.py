@@ -96,7 +96,7 @@ if __name__ == '__main__':
             }
     num_of_song = len(songinfos)
     print(f"number of song is {num_of_song}.")
-    for key, songinfo in songinfo.items():
+    for key, songinfo in songinfos.items():
         print(f"processing {songinfo['song_title']}")
         testinfo[key] = get_lyrics(songinfo)
         print(f"done {key + 1}/{num_of_song}.")
